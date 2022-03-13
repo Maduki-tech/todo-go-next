@@ -16,6 +16,7 @@ type Test struct {
 func main() {
 
 	http.HandleFunc("/todo", getTodo)
+	http.HandleFunc("/del", delTodo)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -24,6 +25,28 @@ func ErrorCheck(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func delTodo(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	err := r.ParseForm()
+	ErrorCheck(err)
+
+	delValue := r.Form.Get("test")
+
+	db, err := sql.Open("mysql", "root:Love1122@/todo")
+	ErrorCheck(err)
+
+	stmt, err := db.Prepare("delete from todoitems where item=?")
+
+	ErrorCheck(err)
+
+	_, e := stmt.Exec(delValue)
+	ErrorCheck(e)
 }
 
 func getTodo(w http.ResponseWriter, r *http.Request) {
