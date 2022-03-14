@@ -1,10 +1,30 @@
 import axios from "axios";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 
 const Home: NextPage = () => {
   const [item, setItem] = useState([]);
+  const [inp, setInp] = useState("");
+
+  const handleSubmit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    console.log(inp);
+
+    const fun = await axios({
+      method: "post",
+      url: "http://localhost:8080/add",
+      params: {
+        test: inp,
+      },
+    });
+
+    if (fun.status == 200) {
+      getData();
+	  setInp('');
+    }
+  };
 
   const handleCheck = async (inp: string) => {
     const fun = await axios({
@@ -15,7 +35,6 @@ const Home: NextPage = () => {
       },
     });
 
-    console.log(fun);
     if (fun.status == 200) {
       getData();
     }
@@ -55,6 +74,20 @@ const Home: NextPage = () => {
         ) : (
           <h1>Keine Elemente Vorhanden</h1>
         )}
+
+        <form
+          id="fmr"
+          onSubmit={(event: SyntheticEvent) => handleSubmit(event)}
+        >
+          <input
+            id="inp"
+            onChange={(e) => setInp(e.target.value)}
+            value={inp}
+            type="text"
+            placeholder="Element Hinzufügen"
+            className="border p-2 rounded-sm"
+          />
+        </form>
       </div>
     </div>
   );

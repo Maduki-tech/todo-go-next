@@ -17,6 +17,7 @@ func main() {
 
 	http.HandleFunc("/todo", getTodo)
 	http.HandleFunc("/del", delTodo)
+	http.HandleFunc("/add", addTodo)
 
 	http.ListenAndServe(":8080", nil)
 }
@@ -25,6 +26,27 @@ func ErrorCheck(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+func addTodo(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "*")
+
+	err := r.ParseForm()
+	ErrorCheck(err)
+
+	inp := r.Form.Get("test")
+
+
+	db, err := sql.Open("mysql", "root:Love1122@/todo")
+	ErrorCheck(err)
+
+	stmt, err := db.Prepare("INSERT INTO todoitems VALUES (null, ?)")
+	ErrorCheck(err)
+
+	_, e := stmt.Exec(inp)
+	ErrorCheck(e)
+	
 }
 
 func delTodo(w http.ResponseWriter, r *http.Request) {
